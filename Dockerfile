@@ -19,9 +19,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     node-less \
     npm \
     # 安装 wkhtmltopdf
-    && wget -O /tmp/wkhtmltox.deb https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bookworm_amd64.deb \
-    && apt-get install -y /tmp/wkhtmltox.deb \
-    && rm /tmp/wkhtmltox.deb \
+#     && wget -O /tmp/wkhtmltox.deb https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bookworm_amd64.deb \
+#     && apt-get install -y /tmp/wkhtmltox.deb \
+#     && rm /tmp/wkhtmltox.deb \
     # 清理缓存
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
