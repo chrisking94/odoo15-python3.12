@@ -6,7 +6,7 @@ on:
 
 env:
   GH_REGISTRY: ghcr.io
-  TENCENT_REGISTRY: ccr.ccs.tencentyun.com
+  TENCENT_REGISTRY: useccr.ccs.tencentyun.com
   NAMESPACE: hypsinoia
   IMAGE_NAME: odoo15-python312
 
