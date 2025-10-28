@@ -27,4 +27,8 @@ fi
 
 # 启动 Odoo
 echo "Starting Odoo..."
-exec python odoo-bin "$@"
+python odoo-bin "$@"
+
+# 阻塞进程，无限运行
+echo "Odoo stopped unexpectedly."
+tail -f /dev/null

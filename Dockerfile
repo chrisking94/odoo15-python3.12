@@ -33,8 +33,8 @@ RUN apt-get update && \
 # 创建系统用户和目录结构
 RUN groupadd -r odoo --gid=135 && \
     useradd -r -g odoo --uid=135 --gid=135 -d /opt/odoo odoo && \
-    mkdir -p /var/log/odoo /etc/odoo /home/odoo/addons /home/odoo/addons1 /home/odoo/addons2 && \
-    chown -R odoo:odoo /opt/odoo /var/log/odoo /etc/odoo /home/odoo
+    mkdir -p /var/lib/odoo /var/log/odoo /etc/odoo /home/odoo/addons /home/odoo/addons1 /home/odoo/addons2 && \
+    chown -R odoo:odoo /opt/odoo /var/lib/odoo /var/log/odoo /etc/odoo /home/odoo
 
 # 设置工作目录
 WORKDIR /opt/odoo
