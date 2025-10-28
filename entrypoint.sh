@@ -1,23 +1,6 @@
 #!/bin/bash
 set -e
 
-# 获取当前用户ID和组ID
-CURRENT_UID=$(id -u)
-CURRENT_GID=$(id -g)
-
-# 确保/etc/passwd中有当前用户的记录
-if ! whoami > /dev/null 2>&1; then
-    echo "用户记录不存在，创建用户记录: UID=$CURRENT_UID, GID=$CURRENT_GID"
-
-    # 创建用户记录
-    echo "odoo:x:$CURRENT_UID:$CURRENT_GID::/opt/odoo:/bin/bash" >> /etc/passwd
-    echo "odoo:x:$CURRENT_GID:" >> /etc/group
-
-    # 确保必要的目录存在并有正确的权限
-    mkdir -p /opt/odoo /var/log/odoo /etc/odoo /home/odoo
-    chown $CURRENT_UID:$CURRENT_GID /opt/odoo /var/log/odoo /etc/odoo /home/odoo
-fi
-
 # 设置 PYTHONPATH 包含额外的包目录
 if [ -n "$EXTRA_PACKAGE_PATHS" ]; then
     IFS=':' read -ra PATHS <<< "$EXTRA_PACKAGE_PATHS"

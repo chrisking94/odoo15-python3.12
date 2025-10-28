@@ -6,41 +6,39 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ODOO_VERSION=15.0 \
     PYTHONPATH=/opt/odoo
 
-# 安装系统依赖（包括gosu用于用户切换）
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    wget \
-    git \
-    libxslt-dev \
-    libzip-dev \
-    libldap2-dev \
-    libsasl2-dev \
-    libpq-dev \
-    node-less \
-    npm \
-    gosu \
-    # 清理缓存
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# 合并系统操作到单层
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        wget \
+        git \
+        libxslt-dev \
+        libzip-dev \
+        libldap2-dev \
+        libsasl2-dev \
+        libpq-dev \
+        node-less \
+        npm \
+        gosu && \
+    # 克隆 Odoo 源码
+    git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.git /opt/odoo && \
+    # 安装 Python 依赖
+    pip install --no-cache-dir /opt/odoo && \
+    # 清理构建依赖和缓存
+    apt-get purge -y --auto-remove build-essential git wget && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/*
 
-# 克隆 Odoo 15.0 源码
-RUN git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.git /opt/odoo
+# 创建系统用户和目录结构
+RUN groupadd -r odoo && \
+    useradd -r -g odoo -d /opt/odoo odoo && \
+    mkdir -p /var/log/odoo /etc/odoo /home/odoo/addons /home/odoo/addons1 /home/odoo/addons2 && \
+    chown -R odoo:odoo /opt/odoo /var/log/odoo /etc/odoo /home/odoo
 
 # 设置工作目录
 WORKDIR /opt/odoo
 
-# 安装 Odoo 15
-RUN pip install --no-cache-dir .
-
-# 创建odoo用户和组（使用高UID避免冲突）
-RUN groupadd -r -g 10001 odoo && \
-    useradd -r -u 10001 -g odoo -d /opt/odoo odoo
-
-# 创建必要的目录
-RUN mkdir -p /var/log/odoo /etc/odoo /home/odoo/addons /home/odoo/addons1 /home/odoo/addons2 && \
-    chown -R odoo:odoo /opt/odoo /var/log/odoo /etc/odoo /home/odoo
-
-# 创建启动脚本
+# 复制启动脚本并设置权限
 COPY --chown=odoo:odoo entrypoint.sh /opt/odoo/entrypoint.sh
 RUN chmod +x /opt/odoo/entrypoint.sh
 
