@@ -47,8 +47,6 @@ jobs:
           context: .
           push: true
           tags: |
-#            ${{ env.GH_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
-#            ${{ env.GH_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
             ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           labels: |
