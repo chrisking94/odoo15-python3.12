@@ -1,0 +1,51 @@
+name: Build and Push to Tencent Cloud
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  TENCENT_REGISTRY: ccr.ccs.tencentyun.com
+  NAMESPACE: hypsinoia
+  IMAGE_NAME: odoo15-python312
+  # Gitee 环境变量（可选，用于镜像源信息）
+  GITEE_REPO: your-gitee-username/your-repo-name  # 替换为实际Gitee仓库路径
+  GITEE_REPO_URL: https://gitee.com/${{ env.GITEE_REPO }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 检出代码
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. 配置Docker Buildx（支持多平台构建和缓存）
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3. 登录腾讯云容器镜像服务（TCR）
+      - name: Login to Tencent Cloud TCR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.TENCENT_REGISTRY }}
+          username: ${{ secrets.TENCENT_USERNAME }}       # Gitee密钥中需配置此名称
+          password: ${{ secrets.TENCENT_PASSWORD }}       # Gitee密钥中需配置此名称
+
+      # 4. 构建镜像并直接推送到腾讯云（带缓存优化）
+      - name: Build and Push to Tencent Cloud
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            # 推送带commit SHA的版本和latest标签
+            ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.GITEE_COMMIT }}
+            ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
+          labels: |
+            # 可选：添加镜像元数据（指向Gitee仓库）
+            org.opencontainers.image.source=${{ env.GITEE_REPO_URL }}
+          # 启用GitHub Actions缓存（Gitee兼容此缓存类型）
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
