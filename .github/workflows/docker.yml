@@ -66,5 +66,6 @@ jobs:
             ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
             
           # 推送
+          docker login ${{ env.TENCENT_REGISTRY }} --username=${{ secrets.TENCENT_CLOUD_USERNAME }} --password=${{ secrets.TENCENT_CLOUD_PASSWORD }}
           docker push ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
