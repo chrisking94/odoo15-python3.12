@@ -22,9 +22,9 @@ fi
 if [ ! -f "/etc/odoo/odoo.conf" ]; then
     echo "Warning: Config file /etc/odoo/odoo.conf not found"
     echo "Creating default config file..."
-    odoo --save --config=/etc/odoo/odoo.conf --stop-after-init
+    python odoo-bin --save --config=/etc/odoo/odoo.conf --stop-after-init
 fi
 
 # 启动 Odoo
 echo "Starting Odoo..."
-exec odoo "$@"
+exec python odoo-bin "$@"
