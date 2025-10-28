@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# 通过环境变量设置 USER 和 HOME
+export USER=$(id -u)
+export HOME=/home/odoo
+
 # 设置 PYTHONPATH 包含额外的包目录
 if [ -n "$EXTRA_PACKAGE_PATHS" ]; then
     IFS=':' read -ra PATHS <<< "$EXTRA_PACKAGE_PATHS"
@@ -18,9 +22,9 @@ fi
 if [ ! -f "/etc/odoo/odoo.conf" ]; then
     echo "Warning: Config file /etc/odoo/odoo.conf not found"
     echo "Creating default config file..."
-    python odoo-bin --save --config=/etc/odoo/odoo.conf --stop-after-init
+    odoo --save --config=/etc/odoo/odoo.conf --stop-after-init
 fi
 
 # 启动 Odoo
 echo "Starting Odoo..."
-exec python odoo-bin "$@"
+exec odoo "$@"
