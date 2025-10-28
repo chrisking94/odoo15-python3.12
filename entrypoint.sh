@@ -5,6 +5,12 @@ set -e
 export USER=$(id -u)
 export HOME=/home/odoo
 
+# 加载环境变量文件（如果存在）
+if [ -f "/home/odoo/.env" ]; then
+    echo "Loading environment variables from /home/odoo/.env"
+    export $(grep -v '^#' /home/odoo/.env | xargs)
+fi
+
 # 设置 PYTHONPATH 包含额外的包目录
 if [ -n "$EXTRA_PACKAGE_PATHS" ]; then
     IFS=':' read -ra PATHS <<< "$EXTRA_PACKAGE_PATHS"
