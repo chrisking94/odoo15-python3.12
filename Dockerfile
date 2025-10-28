@@ -24,7 +24,7 @@ RUN apt-get update && \
     git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.git /opt/odoo && \
     # 安装 Python 依赖
     pip install --no-cache-dir /opt/odoo && \
-    pip install --no-cache-dir lxml_html_clean \
+    pip install --no-cache-dir lxml_html_clean && \
     # 清理构建依赖和缓存
     apt-get purge -y --auto-remove build-essential git wget && \
     apt-get clean && \
