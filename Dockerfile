@@ -22,14 +22,15 @@ RUN apt-get update && \
         gosu && \
     # 克隆 Odoo 源码
     git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.git /opt/odoo && \
+    cd /opt/odoo && \
     # 安装 Python 依赖
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir lxml_html_clean && \
-    pip install --no-cache-dir /opt/odoo && \
+    pip install --no-cache-dir . && \
     # 清理构建依赖和缓存
     apt-get purge -y --auto-remove build-essential git wget && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /opt/odoo/.git
+    rm -rf /var/lib/apt/lists/* /tmp/* ./.git
 
 # 创建系统用户和目录结构
 RUN groupadd -r odoo --gid=135 && \
