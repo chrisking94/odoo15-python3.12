@@ -24,7 +24,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # 登录 GitHub Container Registry
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -32,7 +31,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 登录腾讯云容器镜像服务
       - name: Log in to Tencent Cloud TCR
         uses: docker/login-action@v2
         with:
@@ -40,14 +38,33 @@ jobs:
           username: ${{ secrets.TENCENT_CLOUD_USERNAME }}
           password: ${{ secrets.TENCENT_CLOUD_PASSWORD }}
 
-      # 构建并推送镜像到两个仓库
-      - name: Build and Push
+      # 构建并推送（带缓存）
+      - name: Build and Push to GitHub
         uses: docker/build-push-action@v4
+        id: build
         with:
           context: .
           push: true
           tags: |
-            ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.GH_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.GH_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # 单独推送腾讯云（使用已构建的镜像）
+      - name: Push to Tencent Cloud TCR
+        run: |
+          # 从 GitHub 镜像拉取并重新打标签推送到腾讯云
+          docker pull ${{ env.GH_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          
+          # 重新打标签
+          docker tag ${{ env.GH_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker tag ${{ env.GH_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
+            
+          # 推送
+          docker push ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.TENCENT_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
