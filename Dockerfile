@@ -29,11 +29,8 @@ RUN git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.gi
 # 设置工作目录
 WORKDIR /opt/odoo
 
-# 安装 Python 依赖
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 安装前端依赖
-RUN npm install -g rtlcss
+# 安装 Odoo 15
+RUN pip install --no-cache-dir .
 
 # 创建odoo用户和组（使用高UID避免冲突）
 RUN groupadd -r -g 10001 odoo && \
