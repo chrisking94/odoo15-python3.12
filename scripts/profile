@@ -1,0 +1,22 @@
+# 通过环境变量设置 USER 和 HOME
+export USER=$(id -u)
+export HOME=/home/odoo
+
+# 加载环境变量文件（如果存在）
+if [ -f "/home/odoo/.env" ]; then
+    echo "Loading environment variables from /home/odoo/.env"
+    export $(grep -v '^#' /home/odoo/.env | xargs)
+fi
+
+# 设置 PYTHONPATH 包含额外的包目录
+if [ -n "$EXTRA_PYTHONPATH" ]; then
+    IFS=':' read -ra PATHS <<< "$EXTRA_PYTHONPATH"
+    for path in "${PATHS[@]}"; do
+        if [ -d "$path" ]; then
+            export PYTHONPATH="${PYTHONPATH}:${path}"
+            echo "Added package path: $path"
+        else
+            echo "Warning: Package path does not exist: $path"
+        fi
+    done
+fi

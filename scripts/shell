@@ -1,1 +1,4 @@
+#!/bin/bash
+set -e
+
 odoo shell --no-http -c /etc/odoo/odoo.conf

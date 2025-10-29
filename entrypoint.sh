@@ -1,19 +1,9 @@
 #!/bin/bash
 set -e
 
-# 通过环境变量设置 USER 和 HOME
-export USER=$(id -u)
-export HOME=/home/odoo
-
 # 设置多进程启动方式。
 # * 修复DeprecationWarning: This process (pid=12) is multi-threaded, use of fork() may lead to deadlocks in the child.
 python -c "import multiprocessing; multiprocessing.set_start_method('spawn', force=True)"
-
-# 加载环境变量文件（如果存在）
-if [ -f "/home/odoo/.env" ]; then
-    echo "Loading environment variables from /home/odoo/.env"
-    export $(grep -v '^#' /home/odoo/.env | xargs)
-fi
 
 # 检查配置文件是否存在
 if [ ! -f "/etc/odoo/odoo.conf" ]; then
