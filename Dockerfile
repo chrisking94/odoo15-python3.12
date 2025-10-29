@@ -46,9 +46,7 @@ WORKDIR /opt/odoo
 # 复制脚本并设置权限
 COPY --chown=odoo:odoo ./scripts /home/odoo/scripts/
 COPY --chown=odoo:odoo entrypoint.sh /opt/odoo/entrypoint.sh
-RUN chmod +x /home/odoo/scripts/* /opt/odoo/entrypoint.sh && \
-    echo 'source /home/odoo/scripts/profile' > /etc/profile.d/odoo-env.sh && \
-    chmod +x /etc/profile.d/odoo-env.sh
+RUN chmod +x /home/odoo/scripts/* /opt/odoo/entrypoint.sh
 
 
 # 暴露端口

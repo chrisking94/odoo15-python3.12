@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source "$(dirname "$0")/scripts/profile"
 
 # 设置多进程启动方式。
 # * 修复DeprecationWarning: This process (pid=12) is multi-threaded, use of fork() may lead to deadlocks in the child.
