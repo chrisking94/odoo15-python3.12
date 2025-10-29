@@ -4,7 +4,8 @@ FROM python:3.12-slim-bookworm
 # 设置环境变量
 ENV DEBIAN_FRONTEND=noninteractive \
     ODOO_VERSION=15.0 \
-    PYTHONPATH=/opt/odoo
+    PYTHONPATH="$PYTHONPATH:/opt/odoo" \
+    PATH="$PATH:/home/odoo/scripts"
 
 # 合并系统操作到单层
 RUN apt-get update && \
@@ -42,9 +43,10 @@ RUN groupadd -r odoo --gid=135 && \
 # 设置工作目录
 WORKDIR /opt/odoo
 
-# 复制启动脚本并设置权限
+# 复制脚本并设置权限
+COPY --chown=odoo:odoo ./scripts /home/odoo/scripts/
 COPY --chown=odoo:odoo entrypoint.sh /opt/odoo/entrypoint.sh
-RUN chmod +x /opt/odoo/entrypoint.sh
+RUN chmod +x /home/odoo/scripts/* /opt/odoo/entrypoint.sh
 
 # 暴露端口
 EXPOSE 8069 8072
